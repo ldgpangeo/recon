@@ -1,0 +1,8 @@
+[01-Mar-2021 13:52:12 America/New_York] PHP Fatal error:  Uncaught Error: Call to undefined function usdate() in /home/geoffrion15983/public_html/childsponsor/admin/recon/show_late_payments.php:41
+Stack trace:
+#0 {main}
+  thrown in /home/geoffrion15983/public_html/childsponsor/admin/recon/show_late_payments.php on line 41
+[01-Mar-2021 15:23:02 America/New_York] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_num_row() in /home/geoffrion15983/public_html/childsponsor/admin/recon/rule_edit.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/geoffrion15983/public_html/childsponsor/admin/recon/rule_edit.php on line 13

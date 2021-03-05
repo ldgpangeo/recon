@@ -1,0 +1,50 @@
+create or replace view sponsorship_summary as
+select s.name sponsor, n.name child,  r.reconid, r.itemid, r.civicrmid from r_recon r  
+    left join r_search s on r.civicrmid = s.civicrmid and s.source = 'paypal'
+    left join r_names n on r.itemid = n.itemid;
+
+order by s.name;
+
+#  child information
+select i.* ,d.label groupname,
+case when i.monthly is null then g.monthly else i.monthly end final_monthly,
+case when i.yearly is null then  g.yearly else i.yearly end final_yearly
+from items i
+left join dictionary d on area='groups' and d.setting = i.groupid
+left join groups g on i.groupid = g.groupid
+
+where i.itemid = 91 
+
+select id, sort_name from 15983_tgc_wordpress_civicrm.civicrm_contact 
+left join 15983_tgc_wordpress_civicrm,
+where sort_name is not null and sort_name not like '%@%' order by sort_name limit 50;
+
+
+create or replace view cvcontacts as
+select c.id, sort_name, first_name, middle_name, last_name, nick_name, email, street_address, city, s.abbreviation as state,n.iso_code as nation, postal_code, c.modified_date
+from 15983_tgc_wordpress_civicrm.civicrm_contact c
+left join 15983_tgc_wordpress_civicrm.civicrm_email e on c.id = e.contact_id
+left join 15983_tgc_wordpress_civicrm.civicrm_address a on c.id = a.contact_id
+left join 15983_tgc_wordpress_civicrm.civicrm_state_province s on s.id = a.state_province_id
+left join 15983_tgc_wordpress_civicrm.civicrm_country n on n.id = a.country_id
+where e.is_primary = 1 and on_hold = 0 
+and a.is_primary = 1 and c.is_deceased = 0 and c.is_deleted = 0
+;
+
+create or replace view last_payments as
+select r.* from r_payments r, (select max(datedone) as last_date ,reconid from r_payments group by reconid) m where m.last_date = r.datedone 
+and m.reconid = r.reconid order by r.reconid ;
+
+#   get a summary of alerts
+select n.*, r.reconid, r.itemid, r.civicrmid, r.child, r.sponsor 
+from r_notes n 
+left join recon_data r on n.reconid = r.reconid
+where n.is_alert = 'Y' and n.is_active = 'Y' and n.effective_end_ts is null 
+order by n.effective_start_ts desc
+
+create view recon_data as
+select r.* , i.title as child, c.sort_name as sponsor 
+from r_recon r
+left join items i on r.itemid = i.itemid
+left join cvcontacts c on c.id = r.civicrmid
+where r.is_active = 'Y'
